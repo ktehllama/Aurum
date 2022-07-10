@@ -18,7 +18,7 @@ async def on_ready():
 async def fruit(ctx):
     await ctx.send(random.choice(['🍇','🍈','🍋','🥭','🥝','🍒','🍓','🍏','🥑','🍍','🍌','🍎']))
 
-@client.command()
+@client.command(aliases=['bal'])
 async def balance(ctx):
     user = ctx.author
     await open_account(ctx.author)
