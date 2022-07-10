@@ -1,12 +1,14 @@
+from contextvars import Token
 import discord
 from discord.ext import commands
 import json
 import random
 
-# TOKEN controls the bot, do not share it / client is the bot initiation
-TOKEN = "OTk1MDIyMzc4MzIzMTUyOTE3.GbjFaX.6CPrA0DT08FK-eW0bGbWUgR8Ivs6vjh8hRNvoY"
+# client is the bot initiation
 client = commands.Bot(command_prefix = ['.'])
-
+with open('config.json','r') as token:
+    TOKEN = json.load(token)
+        
 # Start statement
 @client.event
 async def on_ready():
@@ -62,4 +64,4 @@ async def get_bank_data():
         users = json.load(f)
     return users
 
-client.run(TOKEN)
+client.run(TOKEN['token'])
