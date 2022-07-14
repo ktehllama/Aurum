@@ -1,0 +1,13 @@
+{
+
+"Street": {"Coins": [500,1000], "Weights" : [70,30], "Statement" : ["Is that a dead person?","While searching on the street, you forgot to look both ways and got hit by a car"]},
+"Mailbox": {"Coins": [100,500], "Weights" : [75,20], "Statement" : ["What's todays mail?","While searching in the mailbox, you found out that the mail didn't come today"]},
+"Tree": {"Coins": [300,600], "Weights" : [75,20], "Statement" : ["Much leaves","You searched in a tree and on the way down fell off, hitting the ground at such a weird angle you vanished from existence"]},
+"Car": {"Coins": [500,700], "Weights" : [75,20], "Statement" : ["Nice Audi, where did you get it?","While searching for coins in some random car, it exploded without reason"]},
+"Window": {"Coins": [400,700], "Weights" : [72,20], "Statement" : ["The view is nice","While searching for coins, you stopped to take a break to look out the window, at that moment, the sun set you on fire"]},
+"Bank": {"Coins" : [700,2000], "Weights" : [60,40], "Statement" : ["I'd like to make a withdrawel, money puh lease","You accidentally searched the bank clerks purse and were beaten to death"]},
+"Eddies house": {"Coins" : [50,200], "Weights" : [65,48], "Statement" : ["You stole money from a man who is struggling financially","you were beaten up and left out on the street"]},
+"Mullys house": {"Coins" : [20,400], "Weights" : [70,30], "Statement" : ["Just robbing from a fat man with a hitting fetish","Mully beat you cause he doesn't like poor people"]},
+"Prison": {"Coins" : [200,600], "Weights" : [60,40], "Statement" : ["You searched a poor inmates left pocket and took all the man had you gutless heartless potato!","Bad, no no how dare you, get stabbed"]}
+
+}
