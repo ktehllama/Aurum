@@ -5,6 +5,8 @@ import random
 import asyncio
 import time
 
+from help_cog import help_cog
+
 # client is the bot initiation
 client = commands.Bot(command_prefix = ['.'])
 with open('config.json','r') as token:
@@ -14,7 +16,10 @@ with open('config.json','r') as token:
 @client.event
 async def on_ready():
     print('[ED] Bot ready')
-    
+
+client.remove_command('help')
+client.add_cog(help_cog(client))
+
 moni = "<a:moni:950492202541408406>"
 bruh = "<a:bruh:950550513697574942>"
 printer = "<a:printer:950491986606043196>"
@@ -29,7 +34,7 @@ async def end(ctx):
         await ctx.send('> **Terminated program**')
         exit(1)
 
-@client.event #Replace 'client' with whatever neccesary
+@client.event
 async def on_command_error(ctx, error):
     await ctx.send(error)
 
@@ -81,7 +86,7 @@ async def beg(ctx):
 async def on_command_error(ctx,error):
     if isinstance(error,commands.CommandOnCooldown):
         errors = ["wait a moment I'm currently hacking into your router","be patient meth doesn't cook that fast","i'm underpaid please wait for the cooldown"]
-        errorem = discord.Embed(title=random.choice(errors),description="You're on a cooldown for this command, wait `{:.2f}` seconds to use it again".format(error.retry_after),color=discord.Colour.from_rgb(71,153,230))
+        errorem = discord.Embed(title=random.choice(errors),description="You're on a cooldown for this command, wait `{:.0f}` seconds to use it again".format(error.retry_after),color=discord.Colour.from_rgb(71,153,230))
         await ctx.reply(embed=errorem,mention_author=False,delete_after=4)
 
 @client.command(aliases = ['slot'])
@@ -190,7 +195,7 @@ async def slots(ctx, amount=None):
 async def on_command_error(ctx, error):
     if isinstance(error, commands.CommandOnCooldown):
         errors = ["wait a moment I'm currently hacking into your router","be patient meth doesn't cook that fast","i'm underpaid please wait for the cooldown"]
-        errorem = discord.Embed(title=random.choice(errors),description="You're on a cooldown for this command, wait `{:.2f}` seconds to use it again".format(error.retry_after),color=discord.Colour.from_rgb(71,153,230))
+        errorem = discord.Embed(title=random.choice(errors),description="You're on a cooldown for this command, wait `{:.0f}` seconds to use it again".format(error.retry_after),color=discord.Colour.from_rgb(71,153,230))
         await ctx.reply(embed=errorem,mention_author=False,delete_after=4)  
 
 @client.command()
@@ -302,9 +307,9 @@ async def dice(ctx, amount=None):
                     )
                     await bet_embed.edit(embed=bet_cr_embed, mention_author = False)
                     
-        except:
+        except asyncio.TimeoutError:
             timeout_embed = discord.Embed(
-                title = f"{user.name} time's up 🎲",
+                title = f"{user.name}, time's up 🎲",
                 description = f"{user.mention}, you waited too long to choose a number\n*You lost `⌬ {round(amount/2)}` for not choosing a number in time*",
                 color = discord.Color.from_rgb(219,69,65)
             )
@@ -317,7 +322,7 @@ async def dice(ctx, amount=None):
 async def on_command_error(ctx, error):
     if isinstance(error, commands.CommandOnCooldown):
         errors = ["wait a moment I'm currently hacking into your router","be patient meth doesn't cook that fast","i'm underpaid please wait for the cooldown"]
-        errorem = discord.Embed(title=random.choice(errors),description="You're on a cooldown for this command, wait `{:.2f}` seconds to use it again".format(error.retry_after),color=discord.Colour.from_rgb(71,153,230))
+        errorem = discord.Embed(title=random.choice(errors),description="You're on a cooldown for this command, wait `{:.0f}` seconds to use it again".format(error.retry_after),color=discord.Colour.from_rgb(71,153,230))
         await ctx.reply(embed=errorem,mention_author=False,delete_after=4)  
     
 @client.command(aliases=['steal'])
@@ -343,7 +348,6 @@ async def rob(ctx, member:discord.Member="SpecNone"):
         await ctx.reply(embed=wdEmbed, mention_author=False)
         return
         
-
     else:
         rate = ['Yes','No']
         rate_weights = random.choices(rate, weights=(69,39), k=2)
@@ -380,7 +384,7 @@ async def on_command_error(ctx, error):
         rob.reset_cooldown(ctx)
     if isinstance(error, commands.CommandOnCooldown):
         errors = ["wait a moment I'm currently hacking into your router","be patient meth doesn't cook that fast","i'm underpaid please wait for the cooldown"]
-        errorem = discord.Embed(title=random.choice(errors),description="You're on a cooldown for this command, wait `{:.2f}` seconds to use it again".format(error.retry_after),color=discord.Colour.from_rgb(71,153,230))
+        errorem = discord.Embed(title=random.choice(errors),description="You're on a cooldown for this command, wait `{:.0f}` seconds to use it again".format(error.retry_after),color=discord.Colour.from_rgb(71,153,230))
         await ctx.reply(embed=errorem,mention_author=False,delete_after=4)  
     
 @client.command()
@@ -404,8 +408,88 @@ async def work(ctx, *, worked_as=''):
 async def on_command_error(ctx, error):
     if isinstance(error, commands.CommandOnCooldown):
         errors = ["wait a moment I'm currently hacking into your router","be patient meth doesn't cook that fast","i'm underpaid please wait for the cooldown"]
-        errorem = discord.Embed(title=random.choice(errors),description="You're on cooldown for this command, wait `{}` to use it again".format(time.strftime("%H hours %M minutes %S seconds",time.gmtime(error.retry_after))),color=discord.Colour.from_rgb(71,153,230))
-        await ctx.reply(embed=errorem,mention_author=False,delete_after=7)  
+        errorem = discord.Embed(title=random.choice(errors),description="You're on cooldown for this command, wait `{}` to use it again".format(time.strftime("%H hour %M minutes %S seconds",time.gmtime(error.retry_after))),color=discord.Colour.from_rgb(71,153,230))
+        await ctx.reply(embed=errorem,mention_author=False,delete_after=7)
+        
+@client.command()
+@commands.cooldown(1,20,commands.BucketType.user)
+async def search(ctx):
+    user = ctx.message.author
+    await open_account(user)
+    users = await get_bank_data()
+    
+    with open('places.json','r') as f:
+        c_places = json.load(f)
+        
+    places = random.sample(list(c_places), 3)
+    
+    searchEm=discord.Embed(
+        title=f"{user.name}, search",description='🔻*type in chat a location you want to search*🔻\n`{}` `{}` `{}`'.format(places[0],places[1],places[2]),
+        color=discord.Color.from_rgb(230,171,131)
+    )
+    searchEm.set_footer(text='20 seconds to choose❕')
+    searchEm=await ctx.reply(embed=searchEm, mention_author=False)
+    
+    def check(m):
+        return ctx.author == m.author
+    try:
+        msg = await ctx.bot.wait_for('message', timeout=20.0, check=check)
+        
+        if msg.content.capitalize() in list(places):
+            await msg.delete()
+            await searchEm.delete()
+            msg = msg.content.capitalize()
+            
+            factor_weights = random.choice(random.choices(['live','die'],weights=(list(c_places[msg]['Weights'])), k=2))
+            
+            if factor_weights == 'die':
+                die_embed = discord.Embed(
+                    title=f'{user.name}, you died while searching',
+                    description='''{} {}\n\n*You died and lost all your `money` in your wallet* 💸'''.format(''.join(list(c_places[msg]['Statement'][1])),skull),
+                    color = discord.Color.from_rgb(70,62,79)
+                )
+                await ctx.reply(embed=die_embed, mention_author = False)
+                
+                users = await get_bank_data() 
+                with_wallet_amt = users[str(user.id)]['wallet']
+                await update_bank(user,-1*with_wallet_amt)
+
+            elif factor_weights == 'live':
+                coins_range = list(c_places[msg]['Coins'])
+                coins_amount = random.randint(coins_range[0],coins_range[1])
+                
+                live_embed = discord.Embed(
+                    title=f'{user.name}, search successful  🎋',
+                    description='''You searched `{}` and found `⌬ {:,}`\n\n*{}*'''.format(msg.lower(),coins_amount,''.join(''.join(list(c_places[msg]['Statement'][0])))),
+                    color=discord.Color.from_rgb(203,230,168)
+                )
+                await ctx.reply(embed=live_embed, mention_author = False)
+            
+                await update_bank(ctx.author,coins_amount)
+                
+        elif msg.content.capitalize() not in list(places):
+            await searchEm.delete()
+            non_embed = discord.Embed(
+                title = f"{user.name}, did you even read the options",
+                description = f"{user.mention}, what you chose was not in the options for locations {skull}",
+                color = discord.Color.from_rgb(232,67,60)
+            )
+            await ctx.reply(embed=non_embed, mention_author = True)
+            
+    except asyncio.TimeoutError:
+        await searchEm.delete()
+        timeout_embed = discord.Embed(
+            title = f"{user.name}, time's up",
+            description = f"{user.mention}, you waited too long to search for a location {skull}",
+            color = discord.Color.from_rgb(232,67,60)
+        )
+        await ctx.reply(embed=timeout_embed, mention_author = True)
+@search.error
+async def on_command_error(ctx, error):
+    if isinstance(error, commands.CommandOnCooldown):
+        errors = ["wait a moment I'm currently hacking into your router","be patient meth doesn't cook that fast","i'm underpaid please wait for the cooldown"]
+        errorem = discord.Embed(title=random.choice(errors),description="You're on a cooldown for this command, wait `{:.0f}` seconds to use it again".format(error.retry_after),color=discord.Colour.from_rgb(71,153,230))
+        await ctx.reply(embed=errorem,mention_author=False,delete_after=4)  
         
 @client.command(aliases=['with'])
 async def withdraw(ctx,amount = None):
@@ -521,7 +605,7 @@ async def send(ctx,member:discord.Member="SpecNone",amount = None):
 async def on_command_error(ctx,error):
     if isinstance(error,commands.CommandOnCooldown):
         errors = ["wait a moment I'm currently hacking into your router","be patient meth doesn't cook that fast","i'm underpaid please wait for the cooldown"]
-        errorem = discord.Embed(title=random.choice(errors),description="You're on a cooldown for this command, wait `{:.2f}` seconds to use it again".format(error.retry_after),color=discord.Colour.from_rgb(71,153,230))
+        errorem = discord.Embed(title=random.choice(errors),description="You're on a cooldown for this command, wait `{:.0f}` seconds to use it again".format(error.retry_after),color=discord.Colour.from_rgb(71,153,230))
         await ctx.reply(embed=errorem,mention_author=False,delete_after=4)
         
 @client.command(aliases = ['lb'])
@@ -550,6 +634,14 @@ async def leaderboard(ctx,x=5):
         else:
             index += 1
     await ctx.reply(embed=em, mention_author = False)
+    
+@client.command(aliases=['credit'])
+async def credits(ctx):
+    creditEm= discord.Embed(
+        title='Credits 📜',
+        description='yippee'
+    )
+    await ctx.reply(embed=creditEm, mention_author=False)
         
 #  -     -                
         
