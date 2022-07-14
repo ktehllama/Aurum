@@ -423,17 +423,17 @@ async def search(ctx):
         
     places = random.sample(list(c_places), 3)
     
-    searchEm=discord.Embed(
-        title=f"{user.name}, search",description='🔻*type in chat a location you want to search*🔻\n`{}` `{}` `{}`'.format(places[0],places[1],places[2]),
+    searchEm=discord.Embed( 
+        title=f"{user.name}, search",description='🔻*type in chat a location you want to search*🔻\n`{}` | `{}` | `{}`'.format(places[0],places[1],places[2]),
         color=discord.Color.from_rgb(230,171,131)
     )
-    searchEm.set_footer(text='20 seconds to choose❕')
-    searchEm=await ctx.reply(embed=searchEm, mention_author=False)
+    searchEm.set_footer(text='30 seconds to choose❕')
+    searchEm=await ctx.reply(embed=searchEm, mention_author=True)
     
     def check(m):
         return ctx.author == m.author
     try:
-        msg = await ctx.bot.wait_for('message', timeout=20.0, check=check)
+        msg = await ctx.bot.wait_for('message', timeout=35.0, check=check)
         
         if msg.content.capitalize() in list(places):
             await msg.delete()
@@ -443,9 +443,13 @@ async def search(ctx):
             factor_weights = random.choice(random.choices(['live','die'],weights=(list(c_places[msg]['Weights'])), k=2))
             
             if factor_weights == 'die':
+                money_msg = '*You died, luckily you lost no `money` because nothing was in your wallet* 💵'
+                if users[str(user.id)]['wallet'] != 0:
+                    money_msg = '*You died and lost all your `money` in your wallet* 💸'
+                
                 die_embed = discord.Embed(
                     title=f'{user.name}, you died while searching',
-                    description='''{} {}\n\n*You died and lost all your `money` in your wallet* 💸'''.format(''.join(list(c_places[msg]['Statement'][1])),skull),
+                    description='''{} {}\n\n{}'''.format(''.join(list(c_places[msg]['Statement'][1])),skull,money_msg),
                     color = discord.Color.from_rgb(70,62,79)
                 )
                 await ctx.reply(embed=die_embed, mention_author = False)
@@ -639,9 +643,144 @@ async def leaderboard(ctx,x=5):
 async def credits(ctx):
     creditEm= discord.Embed(
         title='Credits 📜',
-        description='yippee'
+        description='''*Thank you to all the people who have helped me on this bot and made it possible 🌹 ⠀⠀⠀- <@680154732567855259>*
+        ━━━━━━━━━━━━
+        
+        `Bot owner & Developer` : <@680154732567855259>
+        `Project Supervisor` : <@520439192925241355>
+        
+        `Helpers with locations on the search command` :
+        > <@338008145626529793>
+        > <@520439192925241355>
+        > <@528394152845639690>
+        
+        `Cooldown quote maker` : <@704508007429439559>
+        ''',
+        color=discord.Color.orange()
     )
     await ctx.reply(embed=creditEm, mention_author=False)
+    
+@client.command()
+@commands.has_role(831032289411465256)
+async def crash(ctx):
+    user = ctx.author
+    crashEm= discord.Embed(
+        title=f'‼ WARNING ‼',
+        description=f"{user.name}, are you sure you want to crash the economy? This will clear **everyone's** balance, this is **irreversable** ⚠\n\n[ `Yes` / `No` ]",
+        color=discord.Color.from_rgb(219,40,40)
+    )
+    crashEm.set_footer(text='This will expire in 40 SECONDS')
+    crashEm= await ctx.reply(embed=crashEm,mention_author=True)
+    
+    responses_yes = ['yes','Yes','Y','y','yeah']
+    responses_no = ['no','No','N','n','nah']
+    
+    def check(m):
+        return ctx.author == m.author
+    try:
+        msg = await ctx.bot.wait_for('message', timeout=40.0, check=check)
+        
+        if msg.content in responses_yes:
+            await msg.delete()
+            await crashEm.delete()
+            
+            crashEm= discord.Embed(
+                title=f'Economy has been crashed 📉',
+                description=f"{user.mention}, you have crashed the economy.\nEveryone is back to their starter balance",
+                color=discord.Color.from_rgb(211,230,151)
+            )
+            crashEm= await ctx.reply(embed=crashEm,mention_author=False)
+            
+            open('mainbank.json', 'w').close()
+            
+            with open('mainbank.json', 'w') as f:
+                f.write('{}')
+
+        elif msg.content in responses_no:
+            await msg.delete()
+            await crashEm.delete()
+            
+            crashEm= discord.Embed(
+                title=f'Economy crash was cancelled 🚧',
+                description=f"{user.mention} you have cancelled crashing the economy.\nThe economy lives to see another day",
+                color=discord.Color.from_rgb(211,230,151)
+            )
+            crashEm= await ctx.reply(embed=crashEm,mention_author=False)
+            
+        elif msg.content not in responses_yes or responses_no:
+            await msg.delete()            
+            await crashEm.delete()
+            non_embed = discord.Embed(
+                title = f"{user.name}, your answer is not in the options ❔",
+                description = f"{user.name}, what you chose was not in the options for crashing the economy {fatkid}",
+                color = discord.Color.from_rgb(232,67,60)
+            )
+            await ctx.reply(embed=non_embed, mention_author = True)
+            
+    except asyncio.TimeoutError:
+        await msg.delete()        
+        await crashEm.delete()
+        timeout_embed = discord.Embed(
+            title = f"{user.name}, time ran out ⏰",
+            description = f"The economy lives to see another day 📈",
+            color = discord.Color.from_rgb(232,67,60)
+        )
+        await ctx.reply(embed=timeout_embed, mention_author = True)
+        
+@client.command()
+# @commands.has_role(831032289411465256)
+async def change(ctx,member:discord.Member,amount:str,selection:str='wallet'):
+    user = ctx.author
+    await open_account(ctx.author)
+    await open_account(member)
+    users = await get_bank_data()
+    
+    parsed_amount = amount
+    if int(parsed_amount) >= 0:
+        
+        if '+' in amount:
+            parsed_amount = int(amount.replace('+',''))
+            
+        if selection == "bank" or 'Bank':
+            await update_bank(member,int(parsed_amount),selection)
+            
+        elif selection == 'wallet' or "wallet":
+            await update_bank(member,int(parsed_amount),selection)
+            
+        users = await get_bank_data()
+            
+        non_embed = discord.Embed(
+            title = f"{user.name}, you changed a balance 📈",
+            description = "You added `⌬ {:,}` to {}'s **{}** {}".format(int(parsed_amount),member.mention, selection, printer),
+            color = discord.Color.from_rgb(211,230,151)
+        )
+        non_embed.add_field(name=f"{member.name}'s wallet",value="`⌬ {:,}`".format(users[str(member.id)]['wallet']))
+        non_embed.add_field(name=f"{member.name}'s bank",value="`⌬ {:,}`".format(users[str(member.id)]['bank']))
+        await ctx.reply(embed=non_embed, mention_author = False)
+        
+    elif int(parsed_amount) < 0:
+        
+        if '-' in amount:
+            parsed_amount = int(amount.replace('-',''))
+        
+        if selection == "bank" or 'Bank':
+            await update_bank_negative(member,int(parsed_amount),selection)
+            
+        elif selection == 'wallet' or "wallet":
+            await update_bank_negative(member,int(parsed_amount),selection)
+            
+        users = await get_bank_data()
+            
+        non_embed = discord.Embed(
+            title = f"{user.name}, you changed a balance 📉",
+            description = "You **removed** `⌬ {:,}` from {}'s **{}** {}".format(int(parsed_amount), member.mention,selection, '💸'),
+            color = discord.Color.from_rgb(211,230,151)
+        )
+        non_embed.add_field(name=f"{member.name}'s wallet",value="`⌬ {:,}`".format(users[str(member.id)]['wallet']))
+        non_embed.add_field(name=f"{member.name}'s bank",value="`⌬ {:,}`".format(users[str(member.id)]['bank']))
+        await ctx.reply(embed=non_embed, mention_author = False)
+
+
         
 #  -     -                
         
@@ -663,6 +802,16 @@ async def update_bank (user,change = 0,mode = 'wallet'):
     users = await get_bank_data() 
 
     users[str(user.id)][mode] += change 
+
+    with open("mainbank.json","w") as f:
+      json.dump(users,f) 
+    bal = [users[str(user.id)]["wallet"],users[str(user.id)]["bank"]]
+    return bal
+
+async def update_bank_negative (user,change = 0,mode = 'wallet'):
+    users = await get_bank_data() 
+
+    users[str(user.id)][mode] -= change 
 
     with open("mainbank.json","w") as f:
       json.dump(users,f) 
