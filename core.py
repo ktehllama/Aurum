@@ -728,7 +728,7 @@ async def crash(ctx):
         await ctx.reply(embed=timeout_embed, mention_author = True)
         
 @client.command()
-# @commands.has_role(831032289411465256)
+@commands.has_role(831032289411465256)
 async def change(ctx,member:discord.Member,amount:str,selection:str='wallet'):
     user = ctx.author
     await open_account(ctx.author)
