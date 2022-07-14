@@ -8,6 +8,16 @@
 "Bank": {"Coins" : [700,2000], "Weights" : [60,40], "Statement" : ["I'd like to make a withdrawel, money puh lease","You accidentally searched the bank clerks purse and were beaten to death"]},
 "Eddies house": {"Coins" : [50,200], "Weights" : [65,48], "Statement" : ["You stole money from a man who is struggling financially","you were beaten up and left out on the street"]},
 "Mullys house": {"Coins" : [20,400], "Weights" : [70,30], "Statement" : ["Just robbing from a fat man with a hitting fetish","Mully beat you cause he doesn't like poor people"]},
-"Prison": {"Coins" : [200,600], "Weights" : [60,40], "Statement" : ["You searched a poor inmates left pocket and took all the man had you gutless heartless potato!","Bad, no no how dare you, get stabbed"]}
+"Prison": {"Coins" : [200,600], "Weights" : [60,40], "Statement" : ["You searched a poor inmates left pocket and took all the man had you gutless heartless potato!","Bad, no no how dare you, get stabbed"]},
+"Cave": {"Coins" : [75,356], "Weights" : [58,50], "Statement" : ["You're lucky there wasn't a bear","You got mauled by a bear... lol"]},
+"Alleyway": {"Coins" : [5,460], "Weights" : [30,70], "Statement" : ["You stumbled upon money in a sketchy alleyway","As you searched the alleyway a homeless man stabbed you"]},
+"Hospital": {"Coins" : [700,3000], "Weights" : [40,60], "Statement" : ["As you walked in the hospital they mistook you for a burn victim and your insurance payed you money","As tried to enter the hospital an ambulance ran you over before you could get in"]},
+"Orphanage": {"Coins" : [20,200], "Weights" : [60,40], "Statement" : ["What are they gonna do, tell their parents?","Their parents were resurrected just to kill you"]},
+"Methlab": {"Coins" : [75, 5000], "Weights" : [20,80], "Statement" : ["You work with walter white in his methlab and made good cash","While looking for money Gus Fring shot you to death"]},
+"Lottery ticket": {"Coins" : [900,2500], "Weights" : [20,80], "Statement" : ["You bought a lottery ticket and won! Congratulations","You bought a lottery ticket and lost... dumbass"]},
+"Toilet": {"Coins" : [5,75], "Weights" : [75,25], "Statement" : ["You're fuckin gross for lookin in the toilet ","You thought you found money but instead it was a turd"]},
+"Freddys pizzeria": {"Coins" : [50,500], "Weights" : [61,39], "Statement" : ["You accidentally solved the missing person cases and got rewarded with loose change","You scrounged around, yet only a few loose cigarettes, an old mattress, and a serial killer was found"]},
+"Virtual reality": {"Coins" : [1,5], "Weights" : [99,19], "Statement" : ["You searched around a virtual environment for some virtual coins for your virtual goods and found some coins!!! But they're the wrong currency of fake money","someone virtually just stabbed you and it hurt virtually killing you virtually."]},
+"Bed": {"Coins" : [5,150], "Weights" : [75,42], "Statement" : ["You searched under your bed and found some pizza and long lost money.","When you looked under your bed The Bogeyman was there. With his elongated limbs, pointy ears, and monstrous teeth, it snatches you and pulls under the bed for your misdeeds."]}
 
 }
