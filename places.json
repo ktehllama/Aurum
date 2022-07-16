@@ -33,7 +33,7 @@
 "Pitstop": {"Coins" : [50, 100],"Weights" : [70, 30],"Statement" : ["you could've stolen the gas, but it's alright", "In the middle of stealing gas, people caught wind of cheap gas, you ended up getting ran over by a semi"]},
 "Dream": {"Coins" : [100, 300],"Weights" : [60, 40],"Statement" : ["you somehow pulled the money from your dream to make quick bank", "Freddy Krueger was mad that you stole from him, so he ended up tormenting you in your dream, you died."]},
 "Nightclub": {"Coins" : [400, 700],"Weights" : [50, 50],"Statement" : ["it's closing time for the drunks", "Tony didn't like you being in his nightclub, he ended up gunning you down"]},
-"The backrooms":{"Coins" : [500,1000], "Weight"  : [65,41], "Statement" : ["You watched game theory's video on how to survive the backrooms and while you were walking you came across relics and treasures","You didn't watch the video and you were attacked by the monster"]} 
-
+"The backrooms":{"Coins" : [500,1000], "Weight"  : [65,41], "Statement" : ["You watched game theory's video on how to survive the backrooms and while you were walking you came across relics and treasures","You didn't watch the video and you were attacked by the monster"]},
+"Duoligo": {"Coins" : [500,1000], "Weights" : [69,40], "Statement" : ["Your Spanish streak lets you live another day, and you got some free coins.","You forgot your Spanish lesson again, you know what happens now"]}
 
 }
