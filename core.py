@@ -1,9 +1,15 @@
+from code import interact
+from importlib.metadata import entry_points
+from multiprocessing.sharedctypes import Value
+from tkinter.ttk import Entry
 import discord
 from discord.ext import commands
 import json
 import random
 import asyncio
 import time
+
+from numpy import integer
 
 from help_cog import help_cog
 
@@ -16,9 +22,17 @@ with open('config.json','r') as token:
 @client.event
 async def on_ready():
     print('[ED] Bot ready')
+    await client.change_presence(activity=discord.Game(name="working on the bot"))
 
 client.remove_command('help')
 client.add_cog(help_cog(client))
+
+mainshop = [
+    {"name": "Fruit", "price": 380, "description": "I love fruit"},
+    {"name": "Phone", "price": 50, "description": "plopophobia"},
+    {"name": "Walter", "price": 1347, "description": "We need to cook jesse"},
+    {"name": "Bank Upgrade", "price": 50, "description": "bonk"}
+]
 
 moni = "<a:moni:950492202541408406>"
 bruh = "<a:bruh:950550513697574942>"
@@ -26,6 +40,8 @@ printer = "<a:printer:950491986606043196>"
 fatkid = "<:fatkid:950761893583278212>"
 skull = "<a:skull:950876386250326037>"
 dollar = "<:dollar:996440567552680006>"
+
+basic_bank_limit = 5000
 
 @client.command(aliases=['kys'])
 async def end(ctx):
@@ -41,8 +57,33 @@ async def on_command_error(ctx, error):
 @client.command()
 async def fruit(ctx):
     await ctx.send(random.choice(['🍇','🍈','🍋','🥭','🥝','🍒','🍓','🍏','🥑','🍍','🍌','🍎','🍉','🍐']))
+    
+@client.command()
+@commands.guild_only()
+async def ba(ctx,amount):
+    # Bal calculation command to make sure if person adds more money than nessecary, it removes
+    # the excess and only adds the nessecary (used for bank limit)
+    
+    bala = 400
+    max_amount = 500
+    amount = int(amount)
+    
+    if amount > 500:
+    
+        subtract_amount = bala - max_amount
+        amount_subtractive = amount - abs(subtract_amount)
+        final_amount = amount - abs(amount_subtractive)
+        
+        await ctx.send(f'Amount left {subtract_amount}')
+        await ctx.send(f'Amount to substract from AMOUNT {amount_subtractive}')
+        await ctx.send(f'Final amount to add {abs(final_amount)}')
+        
+    else:
+        await ctx.send('no need')
+ 
 
 @client.command(aliases=['bal'])
+@commands.guild_only()
 async def balance(ctx,member:discord.Member="SpecNone"):
     if member == "SpecNone":
         user = ctx.author
@@ -64,6 +105,7 @@ async def balance(ctx,member:discord.Member="SpecNone"):
         await ctx.reply(embed=em, mention_author=False)
         
 @client.command()
+@commands.guild_only()
 @commands.cooldown(1,15,commands.BucketType.user)
 async def beg(ctx):
     user = ctx.author
@@ -90,6 +132,7 @@ async def on_command_error(ctx,error):
         await ctx.reply(embed=errorem,mention_author=False,delete_after=4)
 
 @client.command(aliases = ['slot'])
+@commands.guild_only()
 @commands.cooldown(1,25,commands.BucketType.user)
 async def slots(ctx, amount=None):
         user = ctx.message.author
@@ -199,6 +242,7 @@ async def on_command_error(ctx, error):
         await ctx.reply(embed=errorem,mention_author=False,delete_after=4)  
 
 @client.command()
+@commands.guild_only()
 @commands.cooldown(1,50,commands.BucketType.user)
 async def dice(ctx, amount=None):
         user = ctx.message.author
@@ -326,6 +370,7 @@ async def on_command_error(ctx, error):
         await ctx.reply(embed=errorem,mention_author=False,delete_after=4)  
     
 @client.command(aliases=['steal'])
+@commands.guild_only()
 @commands.cooldown(1,20,commands.BucketType.user)
 async def rob(ctx, member:discord.Member="SpecNone"):
     user = ctx.message.author
@@ -388,6 +433,7 @@ async def on_command_error(ctx, error):
         await ctx.reply(embed=errorem,mention_author=False,delete_after=4)  
     
 @client.command()
+@commands.guild_only()
 @commands.cooldown(1,5400,commands.BucketType.user)
 async def work(ctx, *, worked_as=''):
     user = ctx.message.author
@@ -410,9 +456,208 @@ async def on_command_error(ctx, error):
         errors = ["wait a moment I'm currently hacking into your router","be patient meth doesn't cook that fast","i'm underpaid please wait for the cooldown"]
         errorem = discord.Embed(title=random.choice(errors),description="You're on cooldown for this command, wait `{}` to use it again".format(time.strftime("%H hour %M minutes %S seconds",time.gmtime(error.retry_after))),color=discord.Colour.from_rgb(71,153,230))
         await ctx.reply(embed=errorem,mention_author=False,delete_after=7)
-        
+      
 @client.command()
-@commands.cooldown(1,20,commands.BucketType.user)
+@commands.guild_only()
+async def shop(ctx):
+    em = discord.Embed(title="Shop")
+    
+    for item in list(mainshop):
+        name = item['name']
+        price = item['price']
+        desc = item['description']
+        
+        em.add_field(name=name,value='`⌬{:,}` | {}'.format(price,desc),inline=False)
+        
+    await ctx.send(embed=em)
+    
+@client.command(aliases=['inv'])
+@commands.guild_only()
+async def inventory(ctx):
+    await open_account(ctx.author)
+    user = ctx.author
+    users = await get_bank_data()
+
+    try:
+        inv = users[str(user.id)]["inv"]
+    except:
+        inv = []
+    
+    em = discord.Embed(title = "Inventory")
+    for item in inv:
+        name = item["item"]
+        amount = item["amount"]
+        
+        if amount == 0:
+            pass
+        else:
+            em.add_field(name = name, value = amount)    
+
+    await ctx.send(embed = em) 
+    
+@client.command()
+@commands.guild_only()
+async def buy(ctx,*,args):
+    await open_account(ctx.author)
+    
+    await ctx.send(list(args))
+    
+    amount = 1
+    integers = []
+    item_letters = []
+    for entry in list(args):
+        try:
+            integers.append(int(entry))
+        except ValueError:
+            item_letters.append(str(entry))
+            
+    if len(integers) != 0: 
+        string_ints = [str(int) for int in integers]
+        amount = int("".join(string_ints)) 
+        
+    item = str("".join(item_letters)).strip()
+    res = await buy_this(ctx.author,item.strip(),amount)
+
+    if not res[0]:
+        if res[1]==1:
+            await ctx.send("That Object isn't there!")
+            return
+        if res[1]==2:
+            await ctx.send(f"You don't have enough money in your wallet to buy {amount} {item}")
+            return
+        
+    await ctx.send(f"You just bought {amount} {item}")
+    
+async def buy_this(user,item_name,amount):
+    item_name = item_name.lower()
+
+    name_ = None
+    for item in mainshop:
+        name = item["name"].lower()
+        if name == item_name:
+            name_ = name
+            price = item["price"]
+            break
+
+    if name_ == None:
+        return [False,1]
+
+    cost = round(price*amount)
+    users = await get_bank_data()
+    bal = await update_bank(user)
+
+    if bal[0]<cost:
+        return [False,2]
+    
+    try:
+        index = 0
+        t = None
+        for thing in users[str(user.id)]["inv"]:
+            n = thing["item"]
+            if n == item_name:
+                old_amt = thing["amount"]
+                new_amt = old_amt + amount
+                users[str(user.id)]["inv"][index]["amount"] = new_amt
+                t = 1
+                break
+            index+=1 
+        if t == None:
+            obj = {"item":item_name , "amount" : amount}
+            users[str(user.id)]["inv"].append(obj)
+    except:
+        obj = {"item":item_name , "amount" : amount}
+        users[str(user.id)]["inv"] = [obj]        
+
+    with open("mainbank.json","w") as f:
+        json.dump(users,f)
+
+    await update_bank(user,round(cost*-1),"wallet")
+
+    return [True,"Worked"]
+    
+@client.command()
+@commands.guild_only()
+async def sell(ctx,*,args):
+    await open_account(ctx.author)
+    await ctx.send(list(args))
+    
+    amount = 1
+    integers = []
+    item_letters = []
+    for entry in list(args):
+        try:
+            integers.append(int(entry))
+        except ValueError:
+            item_letters.append(str(entry))
+            
+    if len(integers) != 0: 
+        string_ints = [str(int) for int in integers]
+        amount = int("".join(string_ints)) 
+        
+    item = str("".join(item_letters)).strip()
+    res = await sell_this(ctx.author,item.strip(),amount)
+
+    if not res[0]:
+        if res[1]==1:
+            await ctx.send("That Object isn't there!")
+            return
+        if res[1]==2:
+            await ctx.send(f"You don't have {amount} {item} in your inv.")
+            return
+        if res[1]==3:
+            await ctx.send(f"You don't have {item} in your inv.")
+            return
+
+    await ctx.send(f"You just sold {amount} {item}.")
+    
+async def sell_this(user,item_name,amount,price = None):
+    item_name = item_name.lower()
+    
+    name_ = None
+    for item in mainshop:
+        name = item["name"].lower()
+        if name == item_name:
+            name_ = name
+            if price==None:
+                price = round(0.9* item["price"])
+            break
+
+    if name_ == None:
+        return [False,1]
+
+    cost = round(price*amount)
+    users = await get_bank_data()
+    bal = await update_bank(user)
+    
+    try:
+        index = 0
+        t = None
+        for thing in users[str(user.id)]["inv"]:
+            n = thing["item"]
+            if n == item_name:
+                old_amt = thing["amount"]
+                new_amt = old_amt - amount
+                if new_amt < 0:
+                    return [False,2]
+                users[str(user.id)]["inv"][index]["amount"] = new_amt
+                t = 1
+                break
+            index+=1 
+        if t == None:
+            return [False,3]
+    except:
+        return [False,3]     
+
+    with open("mainbank.json","w") as f:
+        json.dump(users,f)
+        
+    await update_bank(user,round(cost),"wallet")
+
+    return [True,"Worked"]
+
+@client.command()
+@commands.guild_only()
+@commands.cooldown(1,30,commands.BucketType.user)
 async def search(ctx):
     user = ctx.message.author
     await open_account(user)
@@ -443,13 +688,13 @@ async def search(ctx):
             factor_weights = random.choice(random.choices(['live','die'],weights=(list(c_places[msg]['Weights'])), k=2))
             
             if factor_weights == 'die':
-                money_msg = '*You died, luckily you lost no `money` because nothing was in your wallet* 💵'
+                money_msg = f'*You died searching `{msg.lower()}`, but you lost no `money` because nothing was in your wallet* 💵'
                 if users[str(user.id)]['wallet'] != 0:
-                    money_msg = '*You died and lost all your `money` in your wallet* 💸'
+                    money_msg = f'*You died searching `{msg.lower()}` and lost all your `money` in your wallet* 💸'
                 
                 die_embed = discord.Embed(
                     title=f'{user.name}, you died while searching',
-                    description='''{} {}\n\n{}'''.format(''.join(list(c_places[msg]['Statement'][1])),skull,money_msg),
+                    description='''\n{} {}\n\n{}'''.format(''.join(list(c_places[msg]['Statement'][1])),skull,money_msg),
                     color = discord.Color.from_rgb(70,62,79)
                 )
                 await ctx.reply(embed=die_embed, mention_author = False)
@@ -496,6 +741,7 @@ async def on_command_error(ctx, error):
         await ctx.reply(embed=errorem,mention_author=False,delete_after=4)  
         
 @client.command(aliases=['with'])
+@commands.guild_only()
 async def withdraw(ctx,amount = None):
     user = ctx.author
     users = await get_bank_data()
@@ -533,6 +779,7 @@ async def withdraw(ctx,amount = None):
     await ctx.reply(embed=emsu,mention_author=False)
     
 @client.command(aliases=['dep'])
+@commands.guild_only()
 async def deposit(ctx,amount = None):
     user = ctx.author
     users = await get_bank_data()
@@ -570,6 +817,7 @@ async def deposit(ctx,amount = None):
     await ctx.reply(embed=emsu,mention_author=False)
   
 @client.command(aliases=['give','transfer'])
+@commands.guild_only()
 @commands.cooldown(5,10,commands.BucketType.user)
 async def send(ctx,member:discord.Member="SpecNone",amount = None):
     user = ctx.author
@@ -653,6 +901,7 @@ async def credits(ctx):
         > <@338008145626529793>
         > <@520439192925241355>
         > <@528394152845639690>
+        > <@760179479506321408>
         
         `Cooldown quote maker` : <@704508007429439559>
         ''',
@@ -661,6 +910,7 @@ async def credits(ctx):
     await ctx.reply(embed=creditEm, mention_author=False)
     
 @client.command()
+@commands.guild_only()
 @commands.has_role(831032289411465256)
 async def crash(ctx):
     user = ctx.author
@@ -728,6 +978,7 @@ async def crash(ctx):
         await ctx.reply(embed=timeout_embed, mention_author = True)
         
 @client.command()
+@commands.guild_only()
 @commands.has_role(831032289411465256)
 async def change(ctx,member:discord.Member,amount:str,selection:str='wallet'):
     user = ctx.author
