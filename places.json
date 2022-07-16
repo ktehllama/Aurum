@@ -18,6 +18,22 @@
 "Toilet": {"Coins" : [5,75], "Weights" : [75,25], "Statement" : ["You're fuckin gross for lookin in the toilet ","You thought you found money but instead it was a turd"]},
 "Freddys pizzeria": {"Coins" : [50,500], "Weights" : [61,39], "Statement" : ["You accidentally solved the missing person cases and got rewarded with loose change","You scrounged around, yet only a few loose cigarettes, an old mattress, and a serial killer was found"]},
 "Virtual reality": {"Coins" : [1,5], "Weights" : [99,19], "Statement" : ["You searched around a virtual environment for some virtual coins for your virtual goods and found some coins!!! But they're the wrong currency of fake money","someone virtually just stabbed you and it hurt virtually killing you virtually."]},
-"Bed": {"Coins" : [5,150], "Weights" : [75,42], "Statement" : ["You searched under your bed and found some pizza and long lost money.","When you looked under your bed The Bogeyman was there. With his elongated limbs, pointy ears, and monstrous teeth, it snatches you and pulls under the bed for your misdeeds."]}
+"Bed": {"Coins" : [5,150], "Weights" : [75,42], "Statement" : ["You searched under your bed and found some pizza and long lost money.","When you looked under your bed The Bogeyman was there. With his elongated limbs, pointy ears, and monstrous teeth, it snatches you and pulls under the bed for your misdeeds."]},
+"Shiny green portal": {"Coins" : [800,3000], "Weights" : [23,78], "Statement" : ["you got teleported to a rich persons house he gave you a small tip to get your ass out of there","you got teleported to a GIANT BLENDER HOLY SHIT AAHHHH IT HURTS anyway you died"]},
+"Couch": {"Coins" : [100,350], "Weights" : [80,20], "Statement" : ["You looked through the couch cushions and under the couch just to find a couple coins and an orange chocolate bar.","You found some completely legal drugs and ate it all making you overdose."]},
+"Litterbox": {"Coins" : [1,250], "Weights" : [85,15], "Statement" : ["You gathered up all of your cat's poop and sold it off the street","The poop was highly radioactive, giving you cancer"]},
+"Moms wardrobe": {"Coins" : [200,600], "Weights" : [60,40], "Statement" : ["You snooped through her bras and found her jewelry box","You died from a long, awkward conversation with your mom"]},
+"House": {"Coins" : [300,700], "Weights" : [68,32], "Statement" : ["you got in the house when no one was there, you got the money and scaddaddled away","turns out the people in the house were American and they had a gun"]},
+"Lake": {"Coins" : [50,550], "Weights" : [63,37], "Statement" : ["You robbed the fish bank and got some coins.","You were in a canoe and was grabbed around the neck to be pulled down into the water."]},
+"Forest": {"Coins" : [300,800], "Weights" : [55,45], "Statement" : ["You became one with nature and begged the animals for coins.","Your looks made people mistaken you for a monster with you getting hunted down."]},
+"Refrigerator": {"Coins" : [100,600], "Weights" : [65,35], "Statement" : ["You took out some coins and cooked them for dinner.","Your refrigerator started running and ran you over."]},
+"Subway": {"Coins" : [20, 70],"Weights" : [75, 25],"Statement" : ["minimum wage must've been worth to steal", "While robbing the place, Jared Fogle came out and gave you his famous footlong, and ended up dying from cholesterol."]},
+"Mexico":{"Coins" : [60,150], "Weight"  : [75,35], "Statement" : ["Your crazy uncle gave you something","You got arrested because they thought you were the one that jump over the border"]},
+"America": {"Coins" : [500, 1500],"Weights" : [45,75],"Statement" : ["you made great use of the land of the free", "Turns out the Army caught wind of you stealing, so they captured and used you for target practice, you died"]},
+"Pitstop": {"Coins" : [50, 100],"Weights" : [70, 30],"Statement" : ["you could've stolen the gas, but it's alright", "In the middle of stealing gas, people caught wind of cheap gas, you ended up getting ran over by a semi"]},
+"Dream": {"Coins" : [100, 300],"Weights" : [60, 40],"Statement" : ["you somehow pulled the money from your dream to make quick bank", "Freddy Krueger was mad that you stole from him, so he ended up tormenting you in your dream, you died."]},
+"Nightclub": {"Coins" : [400, 700],"Weights" : [50, 50],"Statement" : ["it's closing time for the drunks", "Tony didn't like you being in his nightclub, he ended up gunning you down"]},
+"The backrooms":{"Coins" : [500,1000], "Weight"  : [65,41], "Statement" : ["You watched game theory's video on how to survive the backrooms and while you were walking you came across relics and treasures","You didn't watch the video and you were attacked by the monster"]} 
+
 
 }
