@@ -1,15 +1,9 @@
-from code import interact
-from importlib.metadata import entry_points
-from multiprocessing.sharedctypes import Value
-from tkinter.ttk import Entry
 import discord
 from discord.ext import commands
 import json
 import random
 import asyncio
 import time
-
-from numpy import integer
 
 from help_cog import help_cog
 
@@ -27,21 +21,12 @@ async def on_ready():
 client.remove_command('help')
 client.add_cog(help_cog(client))
 
-mainshop = [
-    {"name": "Fruit", "price": 380, "description": "I love fruit"},
-    {"name": "Phone", "price": 50, "description": "plopophobia"},
-    {"name": "Walter", "price": 1347, "description": "We need to cook jesse"},
-    {"name": "Bank Upgrade", "price": 50, "description": "bonk"}
-]
-
 moni = "<a:moni:950492202541408406>"
 bruh = "<a:bruh:950550513697574942>"
 printer = "<a:printer:950491986606043196>"
 fatkid = "<:fatkid:950761893583278212>"
 skull = "<a:skull:950876386250326037>"
 dollar = "<:dollar:996440567552680006>"
-
-basic_bank_limit = 5000
 
 @client.command(aliases=['kys'])
 async def end(ctx):
@@ -61,9 +46,6 @@ async def fruit(ctx):
 @client.command()
 @commands.guild_only()
 async def ba(ctx,amount):
-    # Bal calculation command to make sure if person adds more money than nessecary, it removes
-    # the excess and only adds the nessecary (used for bank limit)
-    
     bala = 400
     max_amount = 500
     amount = int(amount)
@@ -92,7 +74,7 @@ async def balance(ctx,member:discord.Member="SpecNone"):
         
         em = discord.Embed(title=f"{user.name}'s balance",color = discord.Color.teal())
         em.add_field(name='Wallet',value="`⌬ {:,}`".format(users[str(user.id)]['wallet']))
-        em.add_field(name='Bank',value="`⌬ {:,}`".format(users[str(user.id)]['bank']))
+        em.add_field(name='Bank',value="`⌬ {:,} / ⌬ {:,}`".format(users[str(user.id)]['bank'],users[str(user.id)]['limit_bank']))
         await ctx.reply(embed=em, mention_author=False)
     elif member != "SpecNone":
         user = member
@@ -101,7 +83,7 @@ async def balance(ctx,member:discord.Member="SpecNone"):
         
         em = discord.Embed(title=f"{user.name}'s balance",color = discord.Color.teal())
         em.add_field(name='Wallet',value="`⌬ {:,}`".format(users[str(user.id)]['wallet']))
-        em.add_field(name='Bank',value="`⌬ {:,}`".format(users[str(user.id)]['bank']))
+        em.add_field(name='Bank',value="`⌬ {:,} / ⌬ {:,}`".format(users[str(user.id)]['bank'],users[str(user.id)]['limit_bank']))
         await ctx.reply(embed=em, mention_author=False)
         
 @client.command()
@@ -457,9 +439,22 @@ async def on_command_error(ctx, error):
         errorem = discord.Embed(title=random.choice(errors),description="You're on cooldown for this command, wait `{}` to use it again".format(time.strftime("%H hour %M minutes %S seconds",time.gmtime(error.retry_after))),color=discord.Colour.from_rgb(71,153,230))
         await ctx.reply(embed=errorem,mention_author=False,delete_after=7)
       
-@client.command()
+@client.command(aliases=['store'])
 @commands.guild_only()
 async def shop(ctx):
+    user = ctx.message.author
+    await open_account(user)
+    users = await get_bank_data()
+
+    # GET BANK TIERS AND USE IF STATEMENTS TO GET HIGHER TIERS IN buy_this HELPER FUNCTION
+
+    global mainshop
+    mainshop = [
+    {"name": "Fruit", "price": 380, "description": "I love fruit"},
+    {"name": "Phone", "price": 50, "description": "p"},
+    {"name": "Walter", "price": 1347, "description": "Walter"}
+    ]
+    
     em = discord.Embed(title="Shop")
     
     for item in list(mainshop):
@@ -499,8 +494,6 @@ async def inventory(ctx):
 @commands.guild_only()
 async def buy(ctx,*,args):
     await open_account(ctx.author)
-    
-    await ctx.send(list(args))
     
     amount = 1
     integers = []
@@ -566,7 +559,7 @@ async def buy_this(user,item_name,amount):
             users[str(user.id)]["inv"].append(obj)
     except:
         obj = {"item":item_name , "amount" : amount}
-        users[str(user.id)]["inv"] = [obj]        
+        users[str(user.id)]["inv"] = [obj] 
 
     with open("mainbank.json","w") as f:
         json.dump(users,f)
@@ -579,7 +572,6 @@ async def buy_this(user,item_name,amount):
 @commands.guild_only()
 async def sell(ctx,*,args):
     await open_account(ctx.author)
-    await ctx.send(list(args))
     
     amount = 1
     integers = []
@@ -775,7 +767,7 @@ async def withdraw(ctx,amount = None):
     
     users = await get_bank_data()
     emsu.add_field(name="Current wallet balance",value="`⌬ {:,}`".format(users[str(user.id)]["wallet"]))
-    emsu.add_field(name="Current bank balance",value="`⌬ {:,}`".format(users[str(user.id)]["bank"]))
+    emsu.add_field(name="Current bank balance",value="`⌬ {:,} / ⌬ {:,}`".format(users[str(user.id)]["bank"],users[str(user.id)]["limit_bank"]))
     await ctx.reply(embed=emsu,mention_author=False)
     
 @client.command(aliases=['dep'])
@@ -795,25 +787,57 @@ async def deposit(ctx,amount = None):
       if wallet_amt<=0:
             await ctx.reply(f'thats impossible lmao, theres nothing to deposit',mention_author=False) 
             return
-      await update_bank(ctx.author,-1*wallet_amt)
-      await update_bank(ctx.author,wallet_amt,"bank")
-      emsu = discord.Embed(title="Deposit",description="You deposited `⌬ {:,}`".format(wallet_amt),color=discord.Colour.from_rgb(237,240,240))
-    else:
-      amount = int(amount)
-      if amount>bal[0]:
-        await ctx.reply(f'you dont have enough money to deposit that amount lol',mention_author=False) 
-        return
-      if amount<=0:
-        await ctx.reply(f'deposit an amount of money greater than 0',mention_author=False) 
-        return
+        
+      if wallet_amt+bal[1] > users[str(user.id)]["limit_bank"]:
+            bala = bal[1]
+            max_amount = users[str(user.id)]["limit_bank"]
+            
+            subtract_amount = bala - max_amount
+            amount_subtractive = wallet_amt - abs(subtract_amount)
+            final_amount = wallet_amt - abs(amount_subtractive)
+            
+            await update_bank(ctx.author,-1*final_amount)
+            await update_bank(ctx.author,final_amount,"bank")
+            
+            emsu = discord.Embed(title="Deposit",description="You deposited `⌬ {:,}`".format(final_amount),color=discord.Colour.from_rgb(237,240,240))
+            
+      else:
+        await update_bank(ctx.author,-1*wallet_amt)
+        await update_bank(ctx.author,wallet_amt,"bank")
       
-      await update_bank(ctx.author,-1*amount)
-      await update_bank(ctx.author,amount,"bank")
-      emsu = discord.Embed(title="Deposit",description="You deposited `⌬ {:,}`".format(amount),color=discord.Colour.from_rgb(237,240,240))
+        emsu = discord.Embed(title="Deposit",description="You deposited `⌬ {:,}`".format(wallet_amt),color=discord.Colour.from_rgb(237,240,240))
+      
+    else:
+        amount = int(amount)
+        if amount>bal[0]:
+            await ctx.reply(f'you dont have enough money to deposit that amount lol',mention_author=False) 
+            return
+        if amount<=0:
+            await ctx.reply(f'deposit an amount of money greater than 0',mention_author=False) 
+            return
+        
+        if amount+bal[1] > users[str(user.id)]["limit_bank"]:
+            bala = bal[1]
+            max_amount = users[str(user.id)]["limit_bank"]
+            
+            subtract_amount = bala - max_amount
+            amount_subtractive = amount - abs(subtract_amount)
+            final_amount = amount - abs(amount_subtractive)
+            
+            await update_bank(ctx.author,-1*final_amount)
+            await update_bank(ctx.author,final_amount,"bank")
+            
+            emsu = discord.Embed(title="Deposit",description="You deposited `⌬ {:,}`".format(final_amount),color=discord.Colour.from_rgb(237,240,240))
+            
+        else:
+            await update_bank(ctx.author,-1*amount)
+            await update_bank(ctx.author,amount,"bank")
+            
+            emsu = discord.Embed(title="Deposit",description="You deposited `⌬ {:,}`".format(amount),color=discord.Colour.from_rgb(237,240,240))
       
     users = await get_bank_data()
     emsu.add_field(name="Current wallet balance",value="`⌬ {:,}`".format(users[str(user.id)]["wallet"]))
-    emsu.add_field(name="Current bank balance",value="`⌬ {:,}`".format(users[str(user.id)]["bank"]))
+    emsu.add_field(name="Current bank balance",value="`⌬ {:,} / ⌬ {:,}`".format(users[str(user.id)]["bank"],users[str(user.id)]["limit_bank"]))
     await ctx.reply(embed=emsu,mention_author=False)
   
 @client.command(aliases=['give','transfer'])
@@ -845,13 +869,29 @@ async def send(ctx,member:discord.Member="SpecNone",amount = None):
     if amount<=0:
       await ctx.reply(f'thats impossible lol, send an amount of money greater than 0',mention_author=False) 
       return
+  
+    if amount+users[str(member.id)]["bank"] > users[str(member.id)]["limit_bank"][0]:
+            bala = users[str(member.id)]["bank"]
+            max_amount = users[str(member.id)]["limit_bank"][0]
+            
+            subtract_amount = bala - max_amount
+            amount_subtractive = amount - abs(subtract_amount)
+            final_amount = amount - abs(amount_subtractive)
+            
+            await update_bank(ctx.author,-1*final_amount,"bank")
+            await update_bank(member,final_amount,"bank")
+            
+            users = await get_bank_data()
+            sendem = discord.Embed(title="Money sent",description="You sent `⌬ {:,}` to {} {}".format(final_amount,member.mention,moni),color=discord.Colour.from_rgb(188,206,219))
+            sendem.set_footer(text='put those ⌬ to good use {}, or not, i dont care'.format(member.name))
 
-    await update_bank(ctx.author,-1*amount,"bank")
-    await update_bank(member,amount,"bank")
+    else:
+        await update_bank(ctx.author,-1*amount,"bank")
+        await update_bank(member,amount,"bank")
 
-    users = await get_bank_data()
-    sendem = discord.Embed(title="Money sent",description="You sent `⌬ {:,}` to {} {}".format(amount,member.mention,moni),color=discord.Colour.from_rgb(188,206,219))
-    sendem.set_footer(text='put those ⌬ to good use {}, or not, i dont care'.format(member.name))
+        users = await get_bank_data()
+        sendem = discord.Embed(title="Money sent",description="You sent `⌬ {:,}` to {} {}".format(amount,member.mention,moni),color=discord.Colour.from_rgb(188,206,219))
+        sendem.set_footer(text='put those ⌬ to good use {}, or not, i dont care'.format(member.name))
     await ctx.reply(embed=sendem,mention_author=False)
 @send.error
 async def on_command_error(ctx,error):
@@ -1031,8 +1071,6 @@ async def change(ctx,member:discord.Member,amount:str,selection:str='wallet'):
         non_embed.add_field(name=f"{member.name}'s bank",value="`⌬ {:,}`".format(users[str(member.id)]['bank']))
         await ctx.reply(embed=non_embed, mention_author = False)
 
-
-        
 #  -     -                
         
 async def open_account(user):
@@ -1044,6 +1082,7 @@ async def open_account(user):
         users[str(user.id)] = {}
         users[str(user.id)]['wallet'] = 6
         users[str(user.id)]['bank'] = 52
+        users[str(user.id)]['limit_bank'] = 30000
             
     with open('mainbank.json','w') as f:
         users = json.dump(users,f)
