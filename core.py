@@ -12,8 +12,7 @@ from help_cog import help_cog
 
 # client is the bot initiation
 client = commands.Bot(command_prefix = ['.'])
-with open('config.json','r') as token:
-    TOKEN = json.load(token)
+TOKEN = "OTk1MDIyMzc4MzIzMTUyOTE3.GmtrUg.BvbrwA2VjNIJrZ3L-5zoPonUV7VYDXxb_ZVIkg"
     
 # Start statement
 @client.event
