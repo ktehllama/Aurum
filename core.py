@@ -5,6 +5,9 @@ import random
 import asyncio
 import time
 
+import traceback
+import datetime
+
 from help_cog import help_cog
 
 # client is the bot initiation
@@ -16,7 +19,7 @@ with open('config.json','r') as token:
 @client.event
 async def on_ready():
     print('[ED] Bot ready')
-    await client.change_presence(activity=discord.Game(name="working on the bot"))
+    await client.change_presence(activity=discord.Game(name="message Teh llama#0014 for questions idk"))
 
 client.remove_command('help')
 client.add_cog(help_cog(client))
@@ -35,6 +38,7 @@ async def end(ctx):
         await ctx.send('> **Terminated program**')
         exit(1)
 
+# ERROR MODE
 @client.event
 async def on_command_error(ctx, error):
     await ctx.send(error)
@@ -42,6 +46,15 @@ async def on_command_error(ctx, error):
 @client.command()
 async def fruit(ctx):
     await ctx.send(random.choice(['🍇','🍈','🍋','🥭','🥝','🍒','🍓','🍏','🥑','🍍','🍌','🍎','🍉','🍐']))
+   
+# EXPERIMENTAL
+ 
+@client.command()
+async def perms(ctx, user:discord.Member=None):
+    if user == None:
+        user = ctx.author
+        
+    await ctx.send('''```md\n# {}'s permissions\n\n{}\n```'''.format(user.name, "\n".join(p[0] for p in user.permissions_in(ctx.channel) if p[1])))
     
 @client.command()
 @commands.guild_only()
@@ -62,8 +75,9 @@ async def ba(ctx,amount):
         
     else:
         await ctx.send('no need')
- 
 
+# EOS EXPER
+        
 @client.command(aliases=['bal'])
 @commands.guild_only()
 async def balance(ctx,member:discord.Member="SpecNone"):
@@ -353,7 +367,7 @@ async def on_command_error(ctx, error):
     
 @client.command(aliases=['steal'])
 @commands.guild_only()
-@commands.cooldown(1,20,commands.BucketType.user)
+@commands.cooldown(1,30,commands.BucketType.user)
 async def rob(ctx, member:discord.Member="SpecNone"):
     user = ctx.message.author
     await open_account(user)
@@ -416,7 +430,7 @@ async def on_command_error(ctx, error):
     
 @client.command()
 @commands.guild_only()
-@commands.cooldown(1,5400,commands.BucketType.user)
+@commands.cooldown(1,696,commands.BucketType.user)
 async def work(ctx, *, worked_as=''):
     user = ctx.message.author
     await open_account(user)
@@ -428,7 +442,7 @@ async def work(ctx, *, worked_as=''):
     
     work_amt = random.randint(600,1600)
     users[str(user.id)]['wallet'] += work_amt
-    em=discord.Embed(title=f"{user.name}, good work ✅",description="You worked long and hard{} and gained `⌬ {:,}` {}".format(as_a,work_amt,dollar),color=discord.Colour.from_rgb(178,250,143))
+    em=discord.Embed(title=f"{user.name}, good work ✅",description="You worked long and hard{} and gained `⌬ {:,}`".format(as_a,work_amt,dollar),color=discord.Colour.from_rgb(178,250,143))
     await ctx.reply(embed=em,mention_author=False)
     with open('mainbank.json','w') as f:
         users = json.dump(users,f)
@@ -436,9 +450,9 @@ async def work(ctx, *, worked_as=''):
 async def on_command_error(ctx, error):
     if isinstance(error, commands.CommandOnCooldown):
         errors = ["wait a moment I'm currently hacking into your router","be patient meth doesn't cook that fast","i'm underpaid please wait for the cooldown"]
-        errorem = discord.Embed(title=random.choice(errors),description="You're on cooldown for this command, wait `{}` to use it again".format(time.strftime("%H hour %M minutes %S seconds",time.gmtime(error.retry_after))),color=discord.Colour.from_rgb(71,153,230))
+        errorem = discord.Embed(title=random.choice(errors),description="You're on cooldown for this command, wait `{}` to use it again".format(time.strftime("%M minutes %S seconds",time.gmtime(error.retry_after))),color=discord.Colour.from_rgb(71,153,230))
         await ctx.reply(embed=errorem,mention_author=False,delete_after=7)
-      
+
 @client.command(aliases=['store'])
 @commands.guild_only()
 async def shop(ctx):
@@ -446,16 +460,14 @@ async def shop(ctx):
     await open_account(user)
     users = await get_bank_data()
 
-    # GET BANK TIERS AND USE IF STATEMENTS TO GET HIGHER TIERS IN buy_this HELPER FUNCTION
-
     global mainshop
     mainshop = [
-    {"name": "Fruit", "price": 380, "description": "I love fruit"},
-    {"name": "Phone", "price": 50, "description": "p"},
+    {"name": "Fruit", "price": 380, "description": "i love fruit"},
+    {"name": "Phone", "price": 50, "description": "latest from china"},
     {"name": "Walter", "price": 1347, "description": "Walter"}
     ]
     
-    em = discord.Embed(title="Shop")
+    em = discord.Embed(title="Shop [inflation may vary]",color = discord.Color.from_rgb(253,222,88))
     
     for item in list(mainshop):
         name = item['name']
@@ -513,7 +525,7 @@ async def buy(ctx,*,args):
 
     if not res[0]:
         if res[1]==1:
-            await ctx.send("That Object isn't there!")
+            await ctx.send("That object isn't there!")
             return
         if res[1]==2:
             await ctx.send(f"You don't have enough money in your wallet to buy {amount} {item}")
@@ -680,7 +692,10 @@ async def search(ctx):
             factor_weights = random.choice(random.choices(['live','die'],weights=(list(c_places[msg]['Weights'])), k=2))
             
             if factor_weights == 'die':
-                money_msg = f'*You died searching `{msg.lower()}`, but you lost no `money` because nothing was in your wallet* 💵'
+                coins_range = list(c_places[msg]['Coins'])
+                coins_amount = random.randint(coins_range[0],coins_range[1])
+                
+                money_msg = '''*You died searching `{}`, you lost `{:,}` from your bank* 💸'''.format(msg.lower(),round(coins_amount*1.6))
                 if users[str(user.id)]['wallet'] != 0:
                     money_msg = f'*You died searching `{msg.lower()}` and lost all your `money` in your wallet* 💸'
                 
@@ -692,8 +707,13 @@ async def search(ctx):
                 await ctx.reply(embed=die_embed, mention_author = False)
                 
                 users = await get_bank_data() 
-                with_wallet_amt = users[str(user.id)]['wallet']
-                await update_bank(user,-1*with_wallet_amt)
+                
+                if users[str(user.id)]['wallet'] != 0:
+                    with_wallet_amt = users[str(user.id)]['wallet']
+                    await update_bank(user,-1*with_wallet_amt)
+                else:
+                    with_bank_amt = users[str(user.id)]['bank']
+                    await update_bank(user,round(coins_amount*1.6)*-1,'bank')
 
             elif factor_weights == 'live':
                 coins_range = list(c_places[msg]['Coins'])
@@ -860,9 +880,9 @@ async def send(ctx,member:discord.Member="SpecNone",amount = None):
     if amount == None:
       await ctx.reply(f'you need to enter an amount to send smh',mention_author=False)  
       return
-        
-    bal = await update_bank(ctx.author)
+    
     amount = int(amount)
+    bal = await update_bank(ctx.author)
     if amount>bal[1]:
       await ctx.reply("either you aren't rich enough to give `⌬ {:,}`, or you forgot to deposit it in your bank before giving it {}".format(amount,fatkid),mention_author=False) 
       return
@@ -870,7 +890,13 @@ async def send(ctx,member:discord.Member="SpecNone",amount = None):
       await ctx.reply(f'thats impossible lol, send an amount of money greater than 0',mention_author=False) 
       return
   
-    if amount+users[str(member.id)]["bank"] > users[str(member.id)]["limit_bank"][0]:
+    recipient_bank_limit = users[str(member.id)].get("limit_bank", float("inf"))
+    if amount + users[str(member.id)]["bank"] > recipient_bank_limit:
+        await ctx.reply("You can't send `⌬ {:,}` to {} because it would exceed their bank limit of `⌬ {:,}`".format(amount,member.mention, recipient_bank_limit), mention_author=False)
+        return
+  
+    # if amount + users[str(member.id)]["bank"] > users[str(member.id)]["limit_bank"][0]:
+    if amount + users[str(member.id)]["bank"] > users[str(member.id)]["limit_bank"]:
             bala = users[str(member.id)]["bank"]
             max_amount = users[str(member.id)]["limit_bank"][0]
             

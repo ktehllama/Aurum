@@ -119,7 +119,7 @@ class help_cog(commands.Cog):
                     description='''> Play some slots!
                     
                     In slots you have to bet an amount of money of 2 or above. There are fruits and a bomb, more fruits you match of the same kind more money.
-                    If you get 3 of a kind of the same fuityou get a significant amount of money. 
+                    If you get 3 of a kind of the same fuit you get a significant amount of money. 
                     
                     If you get 2 bombs, you lose money, match 3 bombs and you lose a lot of money.
                     
@@ -185,7 +185,8 @@ class help_cog(commands.Cog):
                     description='''> Search for money in various locations.
                     
                     You will be prompted with `3` locations, of which you have to choose one and type it below in chat.
-                    You have a chance of living and getting money, or dying, and losing **everything** in your **wallet**''',
+                    You have a chance of living and getting money, or dying, and losing **everything** in your **wallet**
+                    If you don't have any more money in your **wallet**, a fraction of your loses will be substracted from your **bank**''',
                     color=discord.Colour.from_rgb(131,199,222)
                 )
                 helpEm.add_field(name='Syntax',value="`.search`", inline=False)
