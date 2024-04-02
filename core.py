@@ -19,9 +19,8 @@ TOKEN = "BOT-TOKEN-HERE"
 async def on_ready():
     print('[ED] Bot ready')
     await client.change_presence(activity=discord.Game(name="message Teh llama#0014 for questions idk"))
-
+    await client.add_cog(help_cog(client))
 client.remove_command('help')
-client.add_cog(help_cog(client))
 
 moni = "<a:moni:950492202541408406>"
 bruh = "<a:bruh:950550513697574942>"
