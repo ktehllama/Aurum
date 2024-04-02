@@ -12,7 +12,7 @@ from help_cog import help_cog
 
 # client is the bot initiation
 client = commands.Bot(command_prefix = ['.'])
-TOKEN = "OTk1MDIyMzc4MzIzMTUyOTE3.GmtrUg.BvbrwA2VjNIJrZ3L-5zoPonUV7VYDXxb_ZVIkg"
+TOKEN = "BOT-TOKEN-HERE"
     
 # Start statement
 @client.event
