@@ -73,7 +73,7 @@ If they have an ❌next to them then they require
 installation via `pip`:
 | Package | Included with python? |
 | ---- | ---- |
-| [Discord.py]((https://discordpy.readthedocs.io/) | ❌
+| [Discord.py](https://discordpy.readthedocs.io/) | ❌
 | asyncio | ✅
 | DiscordUtils | ❌
 | json | ✅
